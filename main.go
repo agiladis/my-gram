@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"my-gram/entity"
+	"my-gram/router"
 	"os"
 	"time"
 
@@ -53,4 +54,6 @@ func init() {
 
 func main() {
 	db.Debug().AutoMigrate(&entity.User{}, &entity.Photo{}, &entity.Comment{}, &entity.Socialmedia{})
+
+	router.StartServer(db.Debug()).Run(":3000")
 }
