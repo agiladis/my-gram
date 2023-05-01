@@ -1,19 +1,26 @@
 package router
 
 import (
-	"net/http"
+	"my-gram/controller"
+	"my-gram/repository"
+	"my-gram/service"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func StartServer(db *gorm.DB) *gin.Engine {
+
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	userController := controller.NewUserController(userService)
+
 	app := gin.Default()
-	app.GET("/ping", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "PONG",
-		})
-	})
+
+	userRouter := app.Group("/user")
+	{
+		userRouter.POST("/register", userController.Register)
+	}
 
 	return app
 }
