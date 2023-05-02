@@ -9,3 +9,7 @@ func HashPass(p string) string {
 
 	return string(hash)
 }
+
+func ComparePass(plainPass, hashPass string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashPass), []byte(plainPass))
+}

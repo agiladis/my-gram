@@ -10,6 +10,7 @@ import (
 
 type UserService interface {
 	Register(userRequest entity.UserCreateRequest) (entity.UserResponse, error)
+	AuthenticateUser(userAuth entity.UserAuthenticate) (entity.User, error)
 }
 
 type userService struct {
@@ -53,4 +54,24 @@ func (us *userService) Register(userRequest entity.UserCreateRequest) (entity.Us
 	}
 
 	return userResponse, err
+}
+
+func (us *userService) AuthenticateUser(userAuth entity.UserAuthenticate) (entity.User, error) {
+	data := entity.User{
+		Username: userAuth.Username,
+	}
+
+	// hit repository
+	dataUser, err := us.userRepository.GetUserByUsername(data.Username)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	// compare password
+	err = helper.ComparePass(userAuth.Password, dataUser.Password)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return dataUser, err
 }

@@ -28,3 +28,8 @@ type UserResponse struct {
 	Email    string `json:"email"`
 	Age      int    `json:"age"`
 }
+
+type UserAuthenticate struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
