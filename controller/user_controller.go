@@ -30,7 +30,7 @@ func (uc *userController) Register(ctx *gin.Context) {
 	user, err := uc.userService.Register(userRequest)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": err,
+			"message": err.Error(),
 		})
 		return
 	}

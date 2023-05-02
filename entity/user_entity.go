@@ -6,7 +6,7 @@ type User struct {
 	ID           uint   `json:"id" gorm:"primaryKey"`
 	Username     string `json:"username" gorm:"not null;unique;type:varchar(20)" validate:"required"`
 	Email        string `json:"email" gorm:"not null;unique;type:varchar(40)" validate:"required,email"`
-	Password     string `json:"password" gorm:"not null;type:varchar(80)" validate:"required"`
+	Password     string `json:"password" gorm:"not null;type:varchar(80)" validate:"required,min=6"`
 	Age          int    `json:"age" gorm:"not null" validate:"required,gt=8"`
 	Comments     []Comment
 	Photos       []Photo
