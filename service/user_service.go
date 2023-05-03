@@ -10,7 +10,7 @@ import (
 
 type UserService interface {
 	Register(userRequest entity.UserCreateRequest) (entity.UserResponse, error)
-	AuthenticateUser(userAuth entity.UserAuthenticate) (entity.User, error)
+	AuthenticateUser(userAuth entity.UserAuthenticate) (entity.Tokens, error)
 }
 
 type userService struct {
@@ -56,7 +56,7 @@ func (us *userService) Register(userRequest entity.UserCreateRequest) (entity.Us
 	return userResponse, err
 }
 
-func (us *userService) AuthenticateUser(userAuth entity.UserAuthenticate) (entity.User, error) {
+func (us *userService) AuthenticateUser(userAuth entity.UserAuthenticate) (entity.Tokens, error) {
 	data := entity.User{
 		Username: userAuth.Username,
 	}
@@ -64,14 +64,20 @@ func (us *userService) AuthenticateUser(userAuth entity.UserAuthenticate) (entit
 	// hit repository
 	dataUser, err := us.userRepository.GetUserByUsername(data.Username)
 	if err != nil {
-		return entity.User{}, err
+		return entity.Tokens{}, err
 	}
 
 	// compare password
 	err = helper.ComparePass(userAuth.Password, dataUser.Password)
 	if err != nil {
-		return entity.User{}, err
+		return entity.Tokens{}, err
 	}
 
-	return dataUser, err
+	// Generate token
+	token, err := helper.GenerateToken(dataUser)
+	if err != nil {
+		return entity.Tokens{}, err
+	}
+
+	return token, err
 }
