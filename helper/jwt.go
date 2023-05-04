@@ -8,7 +8,7 @@ import (
 	"github.com/kataras/jwt"
 )
 
-var SharedKey = []byte("sercrethatmaycontainch@r$32charS")
+var SharedKey = []byte("r@h@s14il4h1")
 
 type Claims struct {
 	AccessClaims  entity.AccessClaim

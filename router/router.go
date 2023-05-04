@@ -17,12 +17,26 @@ func StartServer(db *gorm.DB) *gin.Engine {
 	userService := service.NewUserService(userRepository, validate)
 	userController := controller.NewUserController(userService)
 
+	photoRepository := repository.NewPhotoRepository(db)
+	photoService := service.NewPhotoService(photoRepository, validate)
+	photoController := controller.NewPhotoController(photoService)
+
 	app := gin.Default()
 
 	userRouter := app.Group("/users")
 	{
 		userRouter.POST("/register", userController.Register)
 		userRouter.POST("/login", userController.Login)
+	}
+
+	photoRouter := app.Group("/photos")
+	{
+		// photoRouter.GET("/", photoController.GetPhotos)
+		// photoRouter.Use(middleware.Auth())
+		// photoRouter.GET("/:id", photoController.GetPhotoById)
+		photoRouter.POST("/", photoController.CreatePhoto)
+		// photoRouter.DELETE("/:id", photoController.DeletePhoto)
+		// photoRouter.PUT("/:id", photoController.UpdatePhoto)
 	}
 
 	return app
