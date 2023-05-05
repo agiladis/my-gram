@@ -2,6 +2,7 @@ package router
 
 import (
 	"my-gram/controller"
+	"my-gram/middleware"
 	"my-gram/repository"
 	"my-gram/service"
 
@@ -31,8 +32,8 @@ func StartServer(db *gorm.DB) *gin.Engine {
 
 	photoRouter := app.Group("/photos")
 	{
+		photoRouter.Use(middleware.JWTMiddleware())
 		photoRouter.GET("/", photoController.GetAll)
-		// photoRouter.Use(middleware.Auth())
 		// photoRouter.GET("/:id", photoController.GetPhotoById)
 		photoRouter.POST("/", photoController.CreatePhoto)
 		// photoRouter.DELETE("/:id", photoController.DeletePhoto)
