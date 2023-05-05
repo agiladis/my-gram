@@ -9,6 +9,7 @@ import (
 
 type PhotoService interface {
 	Create(photoRequest entity.Photo) (entity.PhotoResponse, error)
+	GetAll() ([]entity.Photo, error)
 }
 
 type photoService struct {
@@ -50,4 +51,8 @@ func (ps *photoService) Create(photoRequest entity.Photo) (entity.PhotoResponse,
 	}
 
 	return photoResponse, err
+}
+
+func (ps *photoService) GetAll() ([]entity.Photo, error) {
+	return ps.photoRepository.GetAll()
 }

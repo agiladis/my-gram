@@ -46,3 +46,19 @@ func (pc *photoController) CreatePhoto(ctx *gin.Context) {
 		"data":    photo,
 	})
 }
+
+func (pc *photoController) GetAll(ctx *gin.Context) {
+	photos, err := pc.photoService.GetAll()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Get all photos success",
+		"data":    photos,
+	})
+
+}

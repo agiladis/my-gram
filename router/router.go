@@ -31,7 +31,7 @@ func StartServer(db *gorm.DB) *gin.Engine {
 
 	photoRouter := app.Group("/photos")
 	{
-		// photoRouter.GET("/", photoController.GetPhotos)
+		photoRouter.GET("/", photoController.GetAll)
 		// photoRouter.Use(middleware.Auth())
 		// photoRouter.GET("/:id", photoController.GetPhotoById)
 		photoRouter.POST("/", photoController.CreatePhoto)
