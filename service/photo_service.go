@@ -9,7 +9,7 @@ import (
 )
 
 type PhotoService interface {
-	Create(photoRequest entity.Photo) (entity.PhotoResponse, error)
+	Create(photoRequest entity.Photo) (entity.Photo, error)
 	GetAll() ([]entity.Photo, error)
 	GetById(id int) (entity.Photo, error)
 	Update(photoId, userId int, newPhoto entity.PhotoCreateRequest) (entity.Photo, error)
@@ -27,33 +27,19 @@ func NewPhotoService(pr repository.PhotoRepository, validate *validator.Validate
 	}
 }
 
-func (ps *photoService) Create(photoRequest entity.Photo) (entity.PhotoResponse, error) {
-
-	// convert request into entity
-	// data := entity.Photo{
-	// 	Title:    photoRequest.Title,
-	// 	Caption:  photoRequest.Caption,
-	// 	PhotoURL: photoRequest.PhotoURL,
-	// }
+func (ps *photoService) Create(photoRequest entity.Photo) (entity.Photo, error) {
 
 	// validate data
 	ps.Validate = validator.New()
 	err := ps.Validate.Struct(photoRequest)
 	if err != nil {
-		return entity.PhotoResponse{}, err
+		return entity.Photo{}, err
 	}
 
 	// hit repository
 	photo, err := ps.photoRepository.Create(photoRequest)
-	photoResponse := entity.PhotoResponse{
-		ID:       photo.ID,
-		Title:    photo.Title,
-		Caption:  photo.Caption,
-		PhotoURL: photo.PhotoURL,
-		UserID:   photo.UserID,
-	}
 
-	return photoResponse, err
+	return photo, err
 }
 
 func (ps *photoService) GetAll() ([]entity.Photo, error) {
