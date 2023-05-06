@@ -67,6 +67,13 @@ func (ps *photoService) Update(photoId, userId int, newPhoto entity.PhotoCreateR
 	photo.Caption = newPhoto.Caption
 	photo.PhotoURL = newPhoto.PhotoURL
 
+	// validate data
+	ps.Validate = validator.New()
+	err = ps.Validate.Struct(photo)
+	if err != nil {
+		return entity.Photo{}, err
+	}
+
 	// hit repository
 	err = ps.photoRepository.Update(photoId, photo)
 	return photo, err
