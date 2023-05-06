@@ -12,6 +12,7 @@ type PhotoRepository interface {
 	GetAll() ([]entity.Photo, error)
 	GetById(id int) (entity.Photo, error)
 	Update(id int, photo entity.Photo) error
+	Delete(id int) error
 }
 
 type photoRepository struct {
@@ -44,6 +45,15 @@ func (pr *photoRepository) Update(id int, photo entity.Photo) error {
 	result := pr.DB.Model(&entity.Photo{}).Where("id = ?", id).Updates(&photo)
 	if result.RowsAffected == 0 {
 		return errors.New("there is no data to update")
+	}
+
+	return nil
+}
+
+func (pr *photoRepository) Delete(id int) error {
+	result := pr.DB.Model(&entity.Photo{}).Where("id = ?", id).Delete(&entity.Photo{})
+	if result.RowsAffected == 0 {
+		return errors.New("there is no data to delete")
 	}
 
 	return nil
