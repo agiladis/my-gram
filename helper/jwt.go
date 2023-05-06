@@ -8,7 +8,7 @@ import (
 	"github.com/kataras/jwt"
 )
 
-var SharedKey = []byte("sercrethatmaycontainch@r$32charS")
+var SharedKey = []byte("r@h@s14il4h1thathavesecure32char")
 
 type Claims struct {
 	AccessClaims  entity.AccessClaim
@@ -47,6 +47,20 @@ func GenerateToken(userInfo entity.User) (tokenOut entity.Tokens, err error) {
 	tokenOut.AccessToken = string(IDToken)
 	if err != nil {
 		return entity.Tokens{}, err
+	}
+
+	return
+}
+
+func VerifyToken(token string, Claims any) (err error) {
+	verifiedToken, err := jwt.Verify(jwt.HS256, SharedKey, []byte(token))
+	if err != nil {
+		return err
+	}
+
+	err = verifiedToken.Claims(&Claims)
+	if err != nil {
+		return err
 	}
 
 	return
