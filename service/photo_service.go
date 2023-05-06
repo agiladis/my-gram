@@ -47,7 +47,7 @@ func (ps *photoService) Create(photoRequest entity.Photo) (entity.PhotoResponse,
 		Title:    photo.Title,
 		Caption:  photo.Caption,
 		PhotoURL: photo.PhotoURL,
-		UserID:   1, // temporary response
+		UserID:   photo.UserID, // temporary response
 	}
 
 	return photoResponse, err

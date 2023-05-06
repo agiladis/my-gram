@@ -53,6 +53,7 @@ func init() {
 }
 
 func main() {
+	db.Debug().Migrator().DropTable(&entity.User{}, &entity.Photo{}, &entity.Comment{}, &entity.Socialmedia{})
 	db.Debug().AutoMigrate(&entity.User{}, &entity.Photo{}, &entity.Comment{}, &entity.Socialmedia{})
 
 	router.StartServer(db.Debug()).Run(":3000")

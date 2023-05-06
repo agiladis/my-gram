@@ -51,6 +51,7 @@ func (us *userService) Register(userRequest entity.UserCreateRequest) (entity.Us
 		ID:       user.ID,
 		Email:    user.Email,
 		Username: user.Username,
+		Age:      user.Age,
 	}
 
 	return userResponse, err

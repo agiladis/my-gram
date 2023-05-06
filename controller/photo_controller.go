@@ -2,6 +2,7 @@ package controller
 
 import (
 	"my-gram/entity"
+	"my-gram/helper"
 	"my-gram/service"
 	"net/http"
 
@@ -26,13 +27,18 @@ func (pc *photoController) CreatePhoto(ctx *gin.Context) {
 		})
 		return
 	}
+	// get user id from ctx
+	accessClaim, err := helper.GetIdentityFromCtx(ctx)
+	if err != nil {
+		return
+	}
 
 	// hit service
 	photo, err := pc.photoService.Create(entity.Photo{
 		Title:    photoRequest.Title,
 		Caption:  photoRequest.Caption,
 		PhotoURL: photoRequest.PhotoURL,
-		UserID:   1,
+		UserID:   uint(accessClaim.AccessClaims.ID),
 	})
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
