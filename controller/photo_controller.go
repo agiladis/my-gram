@@ -70,7 +70,7 @@ func (pc *photoController) GetAll(ctx *gin.Context) {
 
 }
 
-func (pc *photoController) GetPhotoById(ctx *gin.Context) {
+func (pc *photoController) GetOne(ctx *gin.Context) {
 	photoId := ctx.Param("id")
 	photoIdInt, err := strconv.Atoi(photoId)
 	if err != nil {
@@ -81,7 +81,7 @@ func (pc *photoController) GetPhotoById(ctx *gin.Context) {
 	}
 
 	// hit service
-	photo, err := pc.photoService.GetPhotoById(photoIdInt)
+	photo, err := pc.photoService.GetById(photoIdInt)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"message": "photo not found",
@@ -94,4 +94,48 @@ func (pc *photoController) GetPhotoById(ctx *gin.Context) {
 		"data":    photo,
 	})
 
+}
+
+func (pc *photoController) UpdatePhoto(ctx *gin.Context) {
+	var photoRequest entity.PhotoCreateRequest
+
+	err := ctx.ShouldBindJSON(&photoRequest)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	photoId := ctx.Param("id")
+	photoIdInt, err := strconv.Atoi(photoId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// get user info from ctx
+	accessClaim, err := helper.GetIdentityFromCtx(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	// hit service
+	photo, err := pc.photoService.Update(photoIdInt, accessClaim.AccessClaims.ID, photoRequest)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusAccepted, gin.H{
+		"message": "update foto success",
+		"data":    photo,
+	})
 }

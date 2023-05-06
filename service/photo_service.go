@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"my-gram/entity"
 	"my-gram/repository"
 
@@ -10,7 +11,8 @@ import (
 type PhotoService interface {
 	Create(photoRequest entity.Photo) (entity.PhotoResponse, error)
 	GetAll() ([]entity.Photo, error)
-	GetPhotoById(id int) (entity.Photo, error)
+	GetById(id int) (entity.Photo, error)
+	Update(photoId, userId int, newPhoto entity.PhotoCreateRequest) (entity.Photo, error)
 }
 
 type photoService struct {
@@ -58,6 +60,27 @@ func (ps *photoService) GetAll() ([]entity.Photo, error) {
 	return ps.photoRepository.GetAll()
 }
 
-func (ps *photoService) GetPhotoById(id int) (entity.Photo, error) {
-	return ps.photoRepository.GetPhotoById(id)
+func (ps *photoService) GetById(id int) (entity.Photo, error) {
+	return ps.photoRepository.GetById(id)
+}
+
+func (ps *photoService) Update(photoId, userId int, newPhoto entity.PhotoCreateRequest) (entity.Photo, error) {
+	photo, err := ps.photoRepository.GetById(photoId)
+	if err != nil {
+		return entity.Photo{}, err
+	}
+
+	// authorization check
+	if photo.UserID != uint(userId) {
+		return entity.Photo{}, errors.New("unauthorized")
+	}
+
+	// assign new photo data
+	photo.Title = newPhoto.Title
+	photo.Caption = newPhoto.Caption
+	photo.PhotoURL = newPhoto.PhotoURL
+
+	// hit repository
+	err = ps.photoRepository.Update(photoId, photo)
+	return photo, err
 }
