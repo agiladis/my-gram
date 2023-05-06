@@ -34,7 +34,7 @@ func StartServer(db *gorm.DB) *gin.Engine {
 	{
 		photoRouter.Use(middleware.JWTMiddleware())
 		photoRouter.GET("/", photoController.GetAll)
-		// photoRouter.GET("/:id", photoController.GetPhotoById)
+		photoRouter.GET("/:id", photoController.GetPhotoById)
 		photoRouter.POST("/", photoController.CreatePhoto)
 		// photoRouter.DELETE("/:id", photoController.DeletePhoto)
 		// photoRouter.PUT("/:id", photoController.UpdatePhoto)

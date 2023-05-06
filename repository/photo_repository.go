@@ -9,6 +9,7 @@ import (
 type PhotoRepository interface {
 	Create(photo entity.Photo) (entity.Photo, error)
 	GetAll() ([]entity.Photo, error)
+	GetPhotoById(id int) (entity.Photo, error)
 }
 
 type photoRepository struct {
@@ -28,6 +29,11 @@ func (pr *photoRepository) GetAll() ([]entity.Photo, error) {
 	var photos []entity.Photo
 	// err := pr.DB.Preload("Users").Find(&photos).Error
 	err := pr.DB.Model(&entity.Photo{}).Find(&photos).Order("updated_at ASC")
-
 	return photos, err.Error
+}
+
+func (pr *photoRepository) GetPhotoById(id int) (entity.Photo, error) {
+	var photo entity.Photo
+	err := pr.DB.Where("id = ?", id).First(&photo).Error
+	return photo, err
 }

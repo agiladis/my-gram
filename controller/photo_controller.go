@@ -5,6 +5,7 @@ import (
 	"my-gram/helper"
 	"my-gram/service"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -65,6 +66,32 @@ func (pc *photoController) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Get all photos success",
 		"data":    photos,
+	})
+
+}
+
+func (pc *photoController) GetPhotoById(ctx *gin.Context) {
+	photoId := ctx.Param("id")
+	photoIdInt, err := strconv.Atoi(photoId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// hit service
+	photo, err := pc.photoService.GetPhotoById(photoIdInt)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"message": "photo not found",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "photo found",
+		"data":    photo,
 	})
 
 }

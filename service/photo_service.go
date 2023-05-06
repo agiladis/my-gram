@@ -10,6 +10,7 @@ import (
 type PhotoService interface {
 	Create(photoRequest entity.Photo) (entity.PhotoResponse, error)
 	GetAll() ([]entity.Photo, error)
+	GetPhotoById(id int) (entity.Photo, error)
 }
 
 type photoService struct {
@@ -47,7 +48,7 @@ func (ps *photoService) Create(photoRequest entity.Photo) (entity.PhotoResponse,
 		Title:    photo.Title,
 		Caption:  photo.Caption,
 		PhotoURL: photo.PhotoURL,
-		UserID:   photo.UserID, // temporary response
+		UserID:   photo.UserID,
 	}
 
 	return photoResponse, err
@@ -55,4 +56,8 @@ func (ps *photoService) Create(photoRequest entity.Photo) (entity.PhotoResponse,
 
 func (ps *photoService) GetAll() ([]entity.Photo, error) {
 	return ps.photoRepository.GetAll()
+}
+
+func (ps *photoService) GetPhotoById(id int) (entity.Photo, error) {
+	return ps.photoRepository.GetPhotoById(id)
 }
