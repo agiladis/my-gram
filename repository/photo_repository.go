@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"my-gram/entity"
 
 	"gorm.io/gorm"
@@ -9,6 +10,9 @@ import (
 type PhotoRepository interface {
 	Create(photo entity.Photo) (entity.Photo, error)
 	GetAll() ([]entity.Photo, error)
+	GetById(id int) (entity.Photo, error)
+	Update(id int, photo entity.Photo) error
+	Delete(id int) error
 }
 
 type photoRepository struct {
@@ -28,6 +32,29 @@ func (pr *photoRepository) GetAll() ([]entity.Photo, error) {
 	var photos []entity.Photo
 	// err := pr.DB.Preload("Users").Find(&photos).Error
 	err := pr.DB.Model(&entity.Photo{}).Find(&photos).Order("updated_at ASC")
-
 	return photos, err.Error
+}
+
+func (pr *photoRepository) GetById(id int) (entity.Photo, error) {
+	var photo entity.Photo
+	err := pr.DB.Where("id = ?", id).First(&photo).Error
+	return photo, err
+}
+
+func (pr *photoRepository) Update(id int, photo entity.Photo) error {
+	result := pr.DB.Model(&entity.Photo{}).Where("id = ?", id).Updates(&photo)
+	if result.RowsAffected == 0 {
+		return errors.New("there is no data to update")
+	}
+
+	return nil
+}
+
+func (pr *photoRepository) Delete(id int) error {
+	result := pr.DB.Model(&entity.Photo{}).Where("id = ?", id).Delete(&entity.Photo{})
+	if result.RowsAffected == 0 {
+		return errors.New("there is no data to delete")
+	}
+
+	return nil
 }

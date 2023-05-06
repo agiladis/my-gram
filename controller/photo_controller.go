@@ -5,6 +5,7 @@ import (
 	"my-gram/helper"
 	"my-gram/service"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -67,4 +68,108 @@ func (pc *photoController) GetAll(ctx *gin.Context) {
 		"data":    photos,
 	})
 
+}
+
+func (pc *photoController) GetOne(ctx *gin.Context) {
+	photoId := ctx.Param("id")
+	photoIdInt, err := strconv.Atoi(photoId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// hit service
+	photo, err := pc.photoService.GetById(photoIdInt)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"message": "photo not found",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "photo found",
+		"data":    photo,
+	})
+
+}
+
+func (pc *photoController) UpdatePhoto(ctx *gin.Context) {
+	var photoRequest entity.PhotoCreateRequest
+
+	err := ctx.ShouldBindJSON(&photoRequest)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	photoId := ctx.Param("id")
+	photoIdInt, err := strconv.Atoi(photoId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// get user info from ctx
+	accessClaim, err := helper.GetIdentityFromCtx(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	// hit service
+	photo, err := pc.photoService.Update(photoIdInt, accessClaim.AccessClaims.ID, photoRequest)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusAccepted, gin.H{
+		"message": "update photo success",
+		"data":    photo,
+	})
+}
+
+func (pc *photoController) DeletePhoto(ctx *gin.Context) {
+
+	photoId := ctx.Param("id")
+	photoIdInt, err := strconv.Atoi(photoId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// get user info from ctx
+	accessClaim, err := helper.GetIdentityFromCtx(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	// hit service
+	err = pc.photoService.Delete(photoIdInt, accessClaim.AccessClaims.ID)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "delete photo success",
+	})
 }
