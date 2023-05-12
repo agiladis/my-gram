@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"my-gram/entity"
 
 	"gorm.io/gorm"
@@ -10,6 +11,7 @@ type CommentRepository interface {
 	Create(comment entity.Comment) (entity.Comment, error)
 	GetAll() ([]entity.Comment, error)
 	GetById(id int) (entity.Comment, error)
+	Update(id int, comment entity.Comment) error
 }
 
 type commentRepository struct {
@@ -35,4 +37,13 @@ func (cr *commentRepository) GetById(id int) (entity.Comment, error) {
 	var comment entity.Comment
 	err := cr.DB.Where("id = ?", id).First(&comment).Error
 	return comment, err
+}
+
+func (cr *commentRepository) Update(id int, comment entity.Comment) error {
+	result := cr.DB.Model(&entity.Comment{}).Where("id = ?", id).Updates(&comment)
+	if result.RowsAffected == 0 {
+		return errors.New("there is no data to update")
+	}
+
+	return nil
 }

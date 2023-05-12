@@ -15,3 +15,7 @@ type CommentCreateRequest struct {
 	PhotoID uint   `json:"photo_id"`
 	Message string `json:"message"`
 }
+
+type CommentUpdateRequest struct {
+	Message string `json:"message"`
+}

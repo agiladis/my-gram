@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"my-gram/entity"
 	"my-gram/repository"
 
@@ -11,6 +12,7 @@ type CommentService interface {
 	Create(commentRequest entity.Comment) (entity.Comment, error)
 	GetAll() ([]entity.Comment, error)
 	GetById(id int) (entity.Comment, error)
+	Update(commentId, userId int, newComment entity.CommentUpdateRequest) (entity.Comment, error)
 }
 
 type commentService struct {
@@ -43,4 +45,29 @@ func (cs *commentService) GetAll() ([]entity.Comment, error) {
 
 func (cs *commentService) GetById(id int) (entity.Comment, error) {
 	return cs.commentRepository.GetById(id)
+}
+
+func (cs *commentService) Update(commentId, userId int, newComment entity.CommentUpdateRequest) (entity.Comment, error) {
+	comment, err := cs.commentRepository.GetById(commentId)
+	if err != nil {
+		return entity.Comment{}, err
+	}
+
+	// authorization check
+	if comment.UserID != uint(userId) {
+		return entity.Comment{}, errors.New("unauthorized")
+	}
+
+	// assign new comment data
+	comment.Message = newComment.Message
+
+	// validate data
+	cs.Validate = validator.New()
+	if err = cs.Validate.Struct(comment); err != nil {
+		return entity.Comment{}, err
+	}
+
+	// hit repository
+	err = cs.commentRepository.Update(commentId, comment)
+	return comment, err
 }
