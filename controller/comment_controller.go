@@ -50,5 +50,19 @@ func (cc *commentController) CreateComment(ctx *gin.Context) {
 		"message": "comment posted",
 		"data":    comment,
 	})
+}
 
+func (cc *commentController) GetAll(ctx *gin.Context) {
+	comments, err := cc.commentService.GetAll()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Get all comment success",
+		"data":    comments,
+	})
 }

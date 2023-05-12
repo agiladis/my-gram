@@ -8,6 +8,7 @@ import (
 
 type CommentRepository interface {
 	Create(comment entity.Comment) (entity.Comment, error)
+	GetAll() ([]entity.Comment, error)
 }
 
 type commentRepository struct {
@@ -21,4 +22,10 @@ func NewCommentRepository(DB *gorm.DB) *commentRepository {
 func (cr *commentRepository) Create(comment entity.Comment) (entity.Comment, error) {
 	err := cr.DB.Create(&comment).Error
 	return comment, err
+}
+
+func (cr *commentRepository) GetAll() ([]entity.Comment, error) {
+	var comments []entity.Comment
+	err := cr.DB.Model(&entity.Comment{}).Find(&comments).Order("updated_at ASC")
+	return comments, err.Error
 }
