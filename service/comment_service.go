@@ -10,6 +10,7 @@ import (
 type CommentService interface {
 	Create(commentRequest entity.Comment) (entity.Comment, error)
 	GetAll() ([]entity.Comment, error)
+	GetById(id int) (entity.Comment, error)
 }
 
 type commentService struct {
@@ -38,4 +39,8 @@ func (cs *commentService) Create(commentRequest entity.Comment) (entity.Comment,
 
 func (cs *commentService) GetAll() ([]entity.Comment, error) {
 	return cs.commentRepository.GetAll()
+}
+
+func (cs *commentService) GetById(id int) (entity.Comment, error) {
+	return cs.commentRepository.GetById(id)
 }

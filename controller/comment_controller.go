@@ -5,6 +5,7 @@ import (
 	"my-gram/helper"
 	"my-gram/service"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -64,5 +65,30 @@ func (cc *commentController) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Get all comment success",
 		"data":    comments,
+	})
+}
+
+func (cc *commentController) GetOne(ctx *gin.Context) {
+	commentId := ctx.Param("id")
+	commentIdInt, err := strconv.Atoi(commentId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// hit service
+	comment, err := cc.commentService.GetById(commentIdInt)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"message": "comment not found",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Get comment success",
+		"data":    comment,
 	})
 }
