@@ -12,6 +12,7 @@ type CommentRepository interface {
 	GetAll() ([]entity.Comment, error)
 	GetById(id int) (entity.Comment, error)
 	Update(id int, comment entity.Comment) error
+	Delete(id int) error
 }
 
 type commentRepository struct {
@@ -43,6 +44,15 @@ func (cr *commentRepository) Update(id int, comment entity.Comment) error {
 	result := cr.DB.Model(&entity.Comment{}).Where("id = ?", id).Updates(&comment)
 	if result.RowsAffected == 0 {
 		return errors.New("there is no data to update")
+	}
+
+	return nil
+}
+
+func (cr *commentRepository) Delete(id int) error {
+	result := cr.DB.Model(&entity.Comment{}).Where("id = ?", id).Delete(&entity.Comment{})
+	if result.RowsAffected == 0 {
+		return errors.New("there is no data to delete")
 	}
 
 	return nil

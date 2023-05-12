@@ -51,6 +51,7 @@ func StartServer(db *gorm.DB) *gin.Engine {
 		commentRouter.GET("/:id", commentController.GetOne)
 		commentRouter.POST("/", commentController.CreateComment)
 		commentRouter.PUT("/:id", commentController.UpdateComment)
+		commentRouter.DELETE("/:id", commentController.DeleteComment)
 	}
 	return app
 }

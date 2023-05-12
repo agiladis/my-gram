@@ -13,6 +13,7 @@ type CommentService interface {
 	GetAll() ([]entity.Comment, error)
 	GetById(id int) (entity.Comment, error)
 	Update(commentId, userId int, newComment entity.CommentUpdateRequest) (entity.Comment, error)
+	Delete(commentId, userId int) error
 }
 
 type commentService struct {
@@ -70,4 +71,20 @@ func (cs *commentService) Update(commentId, userId int, newComment entity.Commen
 	// hit repository
 	err = cs.commentRepository.Update(commentId, comment)
 	return comment, err
+}
+
+func (cs *commentService) Delete(commentId, userId int) error {
+	comment, err := cs.commentRepository.GetById(commentId)
+	if err != nil {
+		return err
+	}
+
+	// authorization check
+	if comment.UserID != uint(userId) {
+		return errors.New("unauthorized")
+	}
+
+	// hit repository
+	err = cs.commentRepository.Delete(commentId)
+	return err
 }

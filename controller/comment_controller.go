@@ -136,3 +136,37 @@ func (cc *commentController) UpdateComment(ctx *gin.Context) {
 		"data":    comment,
 	})
 }
+
+func (cc *commentController) DeleteComment(ctx *gin.Context) {
+
+	commentId := ctx.Param("id")
+	commentIdInt, err := strconv.Atoi(commentId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// get user info from ctx
+	accessClaim, err := helper.GetIdentityFromCtx(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	// hit service
+	err = cc.commentService.Delete(commentIdInt, accessClaim.AccessClaims.ID)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "delete comment success",
+	})
+}
