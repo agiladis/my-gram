@@ -22,6 +22,10 @@ func StartServer(db *gorm.DB) *gin.Engine {
 	photoService := service.NewPhotoService(photoRepository, validate)
 	photoController := controller.NewPhotoController(photoService)
 
+	commentRepository := repository.NewCommentRepository(db)
+	commentService := service.NewCommentService(commentRepository, validate)
+	commentController := controller.NewCommentController(commentService)
+
 	app := gin.Default()
 
 	userRouter := app.Group("/users")
@@ -40,5 +44,14 @@ func StartServer(db *gorm.DB) *gin.Engine {
 		photoRouter.DELETE("/:id", photoController.DeletePhoto)
 	}
 
+	commentRouter := app.Group("/comments")
+	{
+		commentRouter.Use(middleware.JWTMiddleware())
+		commentRouter.GET("/", commentController.GetAll)
+		commentRouter.GET("/:id", commentController.GetOne)
+		commentRouter.POST("/", commentController.CreateComment)
+		commentRouter.PUT("/:id", commentController.UpdateComment)
+		commentRouter.DELETE("/:id", commentController.DeleteComment)
+	}
 	return app
 }
