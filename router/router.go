@@ -26,6 +26,10 @@ func StartServer(db *gorm.DB) *gin.Engine {
 	commentService := service.NewCommentService(commentRepository, validate)
 	commentController := controller.NewCommentController(commentService)
 
+	socialMediaRepository := repository.NewSocialMediaRepository(db)
+	socialMediaService := service.NewSocialMediaService(socialMediaRepository, validate)
+	socialMediaController := controller.NewSocialMediaController(socialMediaService)
+
 	app := gin.Default()
 
 	userRouter := app.Group("/users")
@@ -52,6 +56,12 @@ func StartServer(db *gorm.DB) *gin.Engine {
 		commentRouter.POST("/", commentController.CreateComment)
 		commentRouter.PUT("/:id", commentController.UpdateComment)
 		commentRouter.DELETE("/:id", commentController.DeleteComment)
+	}
+
+	socialMediaRouter := app.Group("/socialmedias")
+	{
+		socialMediaRouter.Use(middleware.JWTMiddleware())
+		socialMediaRouter.POST("/", socialMediaController.CreateSocialMedia)
 	}
 	return app
 }

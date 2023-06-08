@@ -12,3 +12,7 @@ type Socialmedia struct {
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }
+type SocialMediaRequest struct {
+	Name           string `json:"name"`
+	SocialmediaURL string `json:"social_media_url"`
+}
