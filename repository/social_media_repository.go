@@ -9,6 +9,7 @@ import (
 type SocialMediaRepository interface {
 	Create(socialMedia entity.Socialmedia) (entity.Socialmedia, error)
 	GetAll() ([]entity.Socialmedia, error)
+	GetById(socialMediaId int) (entity.Socialmedia, error)
 }
 
 type socialMediaRepository struct {
@@ -28,4 +29,10 @@ func (smr *socialMediaRepository) GetAll() ([]entity.Socialmedia, error) {
 	var socialMedia []entity.Socialmedia
 	err := smr.DB.Model(&entity.Socialmedia{}).Find(&socialMedia).Order("updated_at ASC")
 	return socialMedia, err.Error
+}
+
+func (smr *socialMediaRepository) GetById(socialMediaId int) (entity.Socialmedia, error) {
+	var socialMedia entity.Socialmedia
+	err := smr.DB.Where("id = ?", socialMediaId).First(&socialMedia).Error
+	return socialMedia, err
 }

@@ -62,6 +62,7 @@ func StartServer(db *gorm.DB) *gin.Engine {
 	{
 		socialMediaRouter.Use(middleware.JWTMiddleware())
 		socialMediaRouter.GET("/", socialMediaController.GetAll)
+		socialMediaRouter.GET("/:id", socialMediaController.GetOne)
 		socialMediaRouter.POST("/", socialMediaController.CreateSocialMedia)
 	}
 	return app
