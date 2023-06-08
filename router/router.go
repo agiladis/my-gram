@@ -64,6 +64,8 @@ func StartServer(db *gorm.DB) *gin.Engine {
 		socialMediaRouter.GET("/", socialMediaController.GetAll)
 		socialMediaRouter.GET("/:id", socialMediaController.GetOne)
 		socialMediaRouter.POST("/", socialMediaController.CreateSocialMedia)
+		socialMediaRouter.PUT("/:id", socialMediaController.UpdateSocialMedia)
+		socialMediaRouter.DELETE("/:id", socialMediaController.DeleteSocialMedia)
 	}
 	return app
 }

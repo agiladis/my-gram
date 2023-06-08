@@ -92,3 +92,80 @@ func (smc *socialMediaController) GetOne(ctx *gin.Context) {
 		"data":    socialMedia,
 	})
 }
+
+func (smc *socialMediaController) UpdateSocialMedia(ctx *gin.Context) {
+	var socialMediaRequest entity.SocialMediaRequest
+
+	err := ctx.ShouldBindJSON(&socialMediaRequest)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	socialMediaId := ctx.Param("id")
+	socialMediaIdInt, err := strconv.Atoi(socialMediaId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// get user info from ctx
+	accessClaim, err := helper.GetIdentityFromCtx(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	// hit service
+	socialMedia, err := smc.socialMediaService.Update(socialMediaIdInt, accessClaim.AccessClaims.ID, socialMediaRequest)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusAccepted, gin.H{
+		"message": "update social media success",
+		"data":    socialMedia,
+	})
+}
+
+func (smc *socialMediaController) DeleteSocialMedia(ctx *gin.Context) {
+	socialMediaId := ctx.Param("id")
+	socialMediaIdInt, err := strconv.Atoi(socialMediaId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// get user info from ctx
+	accessClaim, err := helper.GetIdentityFromCtx(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	// hit service
+	err = smc.socialMediaService.Delete(socialMediaIdInt, accessClaim.AccessClaims.ID)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "delete social media success",
+	})
+}
