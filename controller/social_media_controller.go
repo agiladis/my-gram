@@ -51,3 +51,18 @@ func (smc *socialMediaController) CreateSocialMedia(ctx *gin.Context) {
 		"data":    socialMedia,
 	})
 }
+
+func (smc *socialMediaController) GetAll(ctx *gin.Context) {
+	socialMedia, err := smc.socialMediaService.GetAll()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "get all social media success",
+		"data":    socialMedia,
+	})
+}

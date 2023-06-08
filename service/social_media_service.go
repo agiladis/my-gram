@@ -9,6 +9,7 @@ import (
 
 type SocialMediaService interface {
 	Create(socialMediaRequest entity.Socialmedia) (entity.Socialmedia, error)
+	GetAll() ([]entity.Socialmedia, error)
 }
 
 type socialMediaService struct {
@@ -33,4 +34,8 @@ func (sms *socialMediaService) Create(socialMediaRequest entity.Socialmedia) (en
 
 	// hit repository
 	return sms.socialMediaRepository.Create(socialMediaRequest)
+}
+
+func (sms *socialMediaService) GetAll() ([]entity.Socialmedia, error) {
+	return sms.socialMediaRepository.GetAll()
 }
